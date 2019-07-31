@@ -43,8 +43,23 @@ public class Instrumentor {
 		Set<String> inputClasses = Options.v().getInput();
 		
 		Set<String> skipped = new HashSet<>();
-		
+
+		System.out.println("FILTER " + options.filterNonMatchingClasses());
+		System.out.println("FILTER " + options.getPrefix());
+
 		for (String cls : inputClasses) {
+
+			/* If applicable - Ignore classes that don't have the given prefix */
+			if (options.filterNonMatchingClasses()) {
+				String prefix = options.getPrefix();
+
+				if (!cls.startsWith(prefix)) {
+					System.out.println("Filtered: " + cls);
+
+					continue;
+				}
+			}
+
 			System.out.println("Instrumenting class: " + cls);
 			InputStream bytecode = classloader.getResourceAsStream(cls);
 			

@@ -23,8 +23,17 @@ public class Options {
 
 	@Option(name = "-i", usage = "Specify input file/dir", required = true)
 	private String input;
+
+	@Option(name = "--prefix-to-instrument", usage = "Optional - only instrument the classes with the given prefix")
+	private String prefix;
+
 	private HashSet<String> inputClasses;
-	
+
+	public boolean filterNonMatchingClasses() {
+		System.out.println(prefix);
+		return prefix != null || !prefix.equals("");
+	}
+
 	public String getRawInput() {
 		return input;
 	}
@@ -38,12 +47,12 @@ public class Options {
 			} else if (input.endsWith(".jar")) {
 				// JAR file
 				JarFileIO.extractJar(input, inputClasses);
-				addToClassPath(input);
+				//addToClassPath(input);
 			} else {
 				// directory
 				System.out.println("Loading dir: " + input);
 				loadDirectory(input, inputClasses);
-				addToClassPath(input);
+				//addToClassPath(input);
 			}
 		}
 		return inputClasses;
@@ -59,6 +68,8 @@ public class Options {
 			method.setAccessible(true);
 		    method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{file.toURI().toURL()});
 		} catch (Exception e) {
+			System.out.println(e);
+			e.printStackTrace();
 			throw new RuntimeException("Error adding location to class path: " + url);
 		}
 	    
@@ -120,5 +131,8 @@ public class Options {
 	private Options() {
 	}
 
+	public String getPrefix() {
+		return prefix;
+	}
 }
 
